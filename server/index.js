@@ -10,6 +10,18 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+app.get('/', (req, res) => {
+    res.send('Hello from Vercel Server!');
+});
+
+// Middleware to ensure DB connection
+app.use(async (req, res, next) => {
+    if (mongoose.connection.readyState === 0) {
+        await connectDB();
+    }
+    next();
+});
+
 // MongoDB Connection
 const connectDB = async () => {
     try {
@@ -81,8 +93,12 @@ app.delete('/users/:id', async (req, res) => {
 });
 
 // Start Server
-connectDB().then(() => {
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
+if (require.main === module) {
+    connectDB().then(() => {
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
     });
-});
+}
+
+module.exports = app;

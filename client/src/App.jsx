@@ -6,7 +6,7 @@ function App() {
   const [formData, setFormData] = useState({ name: '', email: '', age: '' })
   const [editingId, setEditingId] = useState(null)
 
-  const API_URL = 'http://localhost:3000/users'
+  const API_URL = import.meta.env.PROD ? '/users' : 'http://localhost:3000/users'
 
   useEffect(() => {
     fetchUsers()
