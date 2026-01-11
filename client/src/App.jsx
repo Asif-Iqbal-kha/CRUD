@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import './App.css'
 
 function App() {
   const [users, setUsers] = useState([])
   const [formData, setFormData] = useState({ name: '', email: '', age: '' })
   const [editingId, setEditingId] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   const API_URL = import.meta.env.PROD ? '/users' : 'http://localhost:3000/users'
 
@@ -13,11 +15,14 @@ function App() {
   }, [])
 
   const fetchUsers = async () => {
+    setLoading(true)
     try {
       const response = await axios.get(API_URL)
       setUsers(response.data)
     } catch (error) {
       console.error('Error fetching users:', error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -58,79 +63,104 @@ function App() {
   }
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <h1>Simple CRUD App</h1>
+    <div className="app-container">
+      <header className="header">
+        <h1>User Management</h1>
+      </header>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit} style={{ marginBottom: '20px' }}>
-        <input
-          type="text"
-          name="name"
-          placeholder="Name"
-          value={formData.name}
-          onChange={handleInputChange}
-          required
-          style={{ marginRight: '10px' }}
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleInputChange}
-          required
-          style={{ marginRight: '10px' }}
-        />
-        <input
-          type="number"
-          name="age"
-          placeholder="Age"
-          value={formData.age}
-          onChange={handleInputChange}
-          required
-          style={{ marginRight: '10px' }}
-        />
-        <button type="submit">
-          {editingId ? 'Update User' : 'Add User'}
-        </button>
-        {editingId && (
-          <button
-            type="button"
-            onClick={() => {
-              setEditingId(null);
-              setFormData({ name: '', email: '', age: '' });
-            }}
-            style={{ marginLeft: '10px' }}
-          >
-            Cancel
+      {/* Form Section */}
+      <div className="glass-panel">
+        <form onSubmit={handleSubmit} className="form-group">
+          <input
+            type="text"
+            name="name"
+            placeholder="Name"
+            value={formData.name}
+            onChange={handleInputChange}
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleInputChange}
+            required
+          />
+          <input
+            type="number"
+            name="age"
+            placeholder="Age"
+            value={formData.age}
+            onChange={handleInputChange}
+            required
+          />
+          <button type="submit">
+            {editingId ? 'Update User' : 'Add User'}
           </button>
-        )}
-      </form>
 
-      {/* List */}
-      <table border="1" cellPadding="10" style={{ borderCollapse: 'collapse', width: '100%' }}>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Age</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user._id}>
-              <td>{user.name}</td>
-              <td>{user.email}</td>
-              <td>{user.age}</td>
-              <td>
-                <button onClick={() => handleEdit(user)} style={{ marginRight: '5px' }}>Edit</button>
-                <button onClick={() => handleDelete(user._id)}>Delete</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+          {editingId && (
+            <button
+              type="button"
+              className="secondary"
+              onClick={() => {
+                setEditingId(null);
+                setFormData({ name: '', email: '', age: '' });
+              }}
+            >
+              Cancel
+            </button>
+          )}
+        </form>
+      </div>
+
+      {/* List Section */}
+      <div className="glass-panel">
+        {loading ? (
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p>Loading users...</p>
+          </div>
+        ) : users.length === 0 ? (
+          <div className="empty-state">
+            <p>No users found. Add one above!</p>
+          </div>
+        ) : (
+          <table className="user-list">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Age</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user._id}>
+                  <td>{user.name}</td>
+                  <td>{user.email}</td>
+                  <td>{user.age}</td>
+                  <td>
+                    <button
+                      className="edit-btn"
+                      onClick={() => handleEdit(user)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDelete(user._id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   )
 }
