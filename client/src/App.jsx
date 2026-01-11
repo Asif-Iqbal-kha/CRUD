@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import './App.css'
+import GPACalculator from './components/GPACalculator'
 
 function App() {
   const [users, setUsers] = useState([])
+  const [view, setView] = useState('users') // 'users' or 'gpa'
   const [formData, setFormData] = useState({ name: '', email: '', age: '' })
   const [editingId, setEditingId] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -65,9 +67,27 @@ function App() {
   return (
     <div className="app-container">
       <header className="header">
-        <h1>User Management</h1>
+        <h1>Student Portal</h1>
+        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1rem' }}>
+            <button 
+                className={view === 'users' ? '' : 'secondary'} 
+                onClick={() => setView('users')}
+            >
+                User Management
+            </button>
+            <button 
+                className={view === 'gpa' ? '' : 'secondary'} 
+                onClick={() => setView('gpa')}
+            >
+                GPA Calculator
+            </button>
+        </div>
       </header>
 
+      {view === 'gpa' ? (
+        <GPACalculator />
+      ) : (
+        <>
       {/* Form Section */}
       <div className="glass-panel">
         <form onSubmit={handleSubmit} className="form-group">
@@ -161,6 +181,8 @@ function App() {
           </table>
         )}
       </div>
+        </>
+      )}
     </div>
   )
 }

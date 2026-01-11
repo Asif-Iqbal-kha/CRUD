@@ -47,7 +47,45 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
+// Result Card Model
+const resultCardSchema = new mongoose.Schema({
+    universityName: String,
+    departmentName: String,
+    semester: String,
+    totalSubjects: Number,
+    subjects: [{
+        name: String,
+        creditHours: Number,
+        gpa: Number
+    }],
+    cgpa: Number,
+    createdAt: { type: Date, default: Date.now }
+});
+
+const ResultCard = mongoose.model('ResultCard', resultCardSchema);
+
 // Routes
+
+// Create Result Card
+app.post('/results', async (req, res) => {
+    try {
+        const newResult = new ResultCard(req.body);
+        await newResult.save();
+        res.status(201).json(newResult);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// Get All Result Cards
+app.get('/results', async (req, res) => {
+    try {
+        const results = await ResultCard.find().sort({ createdAt: -1 });
+        res.json(results);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 
 // Create User
 app.post('/users', async (req, res) => {
