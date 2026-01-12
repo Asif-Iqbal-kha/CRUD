@@ -5,6 +5,7 @@ import axios from 'axios'
 
 function GPACalculator() {
     const [formData, setFormData] = useState({
+        studentName: '',
         universityName: '',
         departmentName: '',
         semester: '',
@@ -72,18 +73,26 @@ function GPACalculator() {
 
         try {
             const doc = new jsPDF()
+
+            // Add Logo
+            const logoUrl = '/logo.png'
+            const img = new Image()
+            img.src = logoUrl
+            doc.addImage(img, 'PNG', 10, 10, 30, 30)
+
             doc.setFontSize(20)
-            doc.text(result.universityName, 105, 20, { align: 'center' })
+            doc.text(result.universityName, 105, 25, { align: 'center' })
 
             doc.setFontSize(16)
-            doc.text(`Department: ${result.departmentName}`, 20, 40)
-            doc.text(`Semester: ${result.semester}`, 20, 50)
-            doc.text(`CGPA: ${result.cgpa}`, 20, 60)
+            doc.text(`Student Name: ${result.studentName}`, 20, 50)
+            doc.text(`Department: ${result.departmentName}`, 20, 60)
+            doc.text(`Semester: ${result.semester}`, 20, 70)
+            doc.text(`CGPA: ${result.cgpa}`, 20, 80)
 
             const tableData = result.subjects.map(sub => [sub.name, sub.creditHours, sub.gpa])
 
             autoTable(doc, {
-                startY: 70,
+                startY: 90,
                 head: [['Subject Name', 'Credit Hours', 'GPA']],
                 body: tableData,
             })
@@ -104,6 +113,15 @@ function GPACalculator() {
             <h2>GPA Calculator</h2>
 
             <form onSubmit={handleInitialSubmit} className="form-group" style={{ alignItems: 'flex-end', marginBottom: '2rem' }}>
+                <div style={{ flex: 1 }}>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', color: '#94a3b8' }}>Student Name</label>
+                    <input
+                        type="text"
+                        value={formData.studentName}
+                        onChange={(e) => setFormData({ ...formData, studentName: e.target.value })}
+                        required
+                    />
+                </div>
                 <div style={{ flex: 1 }}>
                     <label style={{ display: 'block', marginBottom: '0.5rem', color: '#94a3b8' }}>University Name</label>
                     <input
