@@ -51,8 +51,8 @@ function GPACalculator() {
             totalPoints += (sub.creditHours * sub.gpa)
         }
 
-        const cgpa = (totalPoints / totalCreditHours).toFixed(2)
-        const resultData = { ...formData, subjects: validSubjects, cgpa }
+        const sgpa = (totalPoints / totalCreditHours).toFixed(2)
+        const resultData = { ...formData, subjects: validSubjects, sgpa }
         setResult(resultData)
 
         // Save to DB
@@ -81,13 +81,16 @@ function GPACalculator() {
             doc.addImage(img, 'PNG', 10, 10, 30, 30)
 
             doc.setFontSize(20)
-            doc.text(result.universityName, 105, 25, { align: 'center' })
+            // Center text with wrapping. Max width approx 150 to allow space for logo and margins if needed, 
+            // but since logo is left, we can use full center area.
+            // Page width is usually 210. 105 is center.
+            doc.text(result.universityName, 105, 25, { align: 'center', maxWidth: 160 })
 
             doc.setFontSize(16)
             doc.text(`Student Name: ${result.studentName}`, 20, 50)
             doc.text(`Department: ${result.departmentName}`, 20, 60)
             doc.text(`Semester: ${result.semester}`, 20, 70)
-            doc.text(`CGPA: ${result.cgpa}`, 20, 80)
+            doc.text(`SGPA: ${result.sgpa}`, 20, 80)
 
             const tableData = result.subjects.map(sub => [sub.name, sub.creditHours, sub.gpa])
 
@@ -197,7 +200,7 @@ function GPACalculator() {
 
             {result && (
                 <div className="result-display" style={{ marginTop: '2rem', textAlign: 'center', padding: '2rem', background: 'rgba(255,255,255,0.05)', borderRadius: '16px' }}>
-                    <h3 style={{ fontSize: '2rem', color: 'var(--secondary-color)' }}>Calculated CGPA: {result.cgpa}</h3>
+                    <h3 style={{ fontSize: '2rem', color: 'var(--secondary-color)' }}>Calculated SGPA: {result.sgpa}</h3>
                     <button onClick={generatePDF} style={{ marginTop: '1rem' }}>Download Result Card (PDF)</button>
                 </div>
             )}
